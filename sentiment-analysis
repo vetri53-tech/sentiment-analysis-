@@ -1,0 +1,33 @@
+import pandas as pd
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import nltk
+
+# Download VADER lexicon (only needed once)
+nltk.download('vader_lexicon')
+
+# Initialize the sentiment analyzer
+sia = SentimentIntensityAnalyzer()
+
+# Load your social media dataset (e.g., tweets.csv)
+# Make sure it has a column named 'text' with the social media content
+df = pd.read_csv('tweets.csv')
+
+# Function to get sentiment
+def analyze_sentiment(text):
+    score = sia.polarity_scores(str(text))  # Get sentiment scores
+    compound = score['compound']
+    if compound >= 0.05:
+        return 'Positive'
+    elif compound <= -0.05:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+# Apply sentiment analysis
+df['Sentiment'] = df['text'].apply(analyze_sentiment)
+
+# Optional: View the results
+print(df[['text', 'Sentiment']].head())
+
+# Save the result to a new CSV
+df.to_csv('tweets_with_sentiment.csv', index=False)
